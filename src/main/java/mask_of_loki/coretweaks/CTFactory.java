@@ -80,7 +80,7 @@ public class CTFactory implements TradeOffers.Factory {
 	private static ItemStack applyData(TradeItem trade, ItemStack stack, Random random) {
 		if (trade.potion != null) {
 			if (!trade.potion.equals("mct:any")) {
-				Potion potion = Registry.POTION.get(Identifier.create(trade.potion));
+				Potion potion = Registry.POTION.get(new Identifier(trade.potion));
 				System.out.println(trade.potion);
 				System.out.println(Registry.POTION.getId(potion).toString());
 				stack = PotionUtil.setPotion(stack, potion);
@@ -94,7 +94,7 @@ public class CTFactory implements TradeOffers.Factory {
 			for (int i = 0; i < trade.effects.length; ++i) {
 				StatusEffect effect = null;
 				if (!trade.effects[i].id.equals("mct:any")) {
-					effect = Registry.STATUS_EFFECT.get(Identifier.create(trade.effects[i].id));
+					effect = Registry.STATUS_EFFECT.get(new Identifier(trade.effects[i].id));
 				} else {
 					effect = Registry.STATUS_EFFECT.getRandom(random);
 				}
@@ -109,7 +109,7 @@ public class CTFactory implements TradeOffers.Factory {
 			for (int i = 0; i < trade.enchants.length; ++i) {
 				Enchantment enchant = null;
 				if (!trade.enchants[i].id.equals("mct:any")) {
-					enchant = Registry.ENCHANTMENT.get(Identifier.create(trade.enchants[i].id));
+					enchant = Registry.ENCHANTMENT.get(new Identifier(trade.enchants[i].id));
 				} else {
 					enchant = Registry.ENCHANTMENT.getRandom(random);
 				}
