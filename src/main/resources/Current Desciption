@@ -1,0 +1,43 @@
+Description
+A collection of tweaks and additions to vanilla minecraft that don't require the client to be modded when used on a server. Every feature can be enabled, disabled, and adjusted in the main configuration file.
+Current Features
+In-Game Adjustment
+All main configurations can be read, adjusted, and saved via the /mct config command
+All configurations, including trade configs, can be reloaded using the /mct reload command
+Configurable Trades
+Villager trades can be created and adjusted within config files on a per-profession basis. These trades can either replace the builtin villager trades, or they can be appended to them.
+
+Roadmap
+Trades
+* Current trade config is very inflexible. Add in the ability to set nbt via json
+* Add ability to set min/max instead of a specific count on item counts and enchantment level
+Quality Trades
+* Disabled by default. Can be be enabled in the main config
+* Villager badges currently represent the level of the villager. Once this is implemented, badges will represent the quality of the trades that that villager can gain.
+* Villagers can go up to a configurable level. Default is twenty
+* Every level gained has a configurable chance to increase the trade quality. Default chance is 5%
+* Every level gained grants the villager a trade from their current quality level
+	* If there are no trades available in the current quality, it will look up to two trade qualities down for a trade
+	* If the villager has tried up to a certain number of trades from the current quality and hasn't gotten a trade it doesn't have, it will look up to two trade qualities down for a trade
+	* If no trades were added, then a random trade will be improved
+		* Trade can be improved by either decreasing the cost, or increasing the number of purchased items
+		* Increasing the number of purchased items will only work up to the stack size for the item
+	* If a trade was unable to be improved, extra xp will be dropped for the player
+Command Tweaks
+* /fill command will be modified to take a block tag or block id.
+	* If a block tag is provided, every block that will be filled is replaced by a randomly selected block in the tag
+	* If a block id is provided, it acts as normal
+* /setblock will be modified to work like /fill changes, but for a single block
+* /chunk command
+	* Query light levels at an entity or block position
+	* Get or set biome at an entity or block position
+* /function command
+	* Add ability to get the number of functions in a tag
+	* Add ability to call a function from a tag using a number or scoreboard objective
+* /random <min> <max> [scoreboard] command to generate a random number
+	* min argument is a number
+	* max argument is either a number or a scoreboard objective
+	* Generated number is returned
+	* Generated number is stored into scoreboard objective if provided
+* /raycast <entity|block> <pos1> <pos2> <id|tag> <x objective> <y objective> <z objective> [blockface objective]
+* Add the ability to the entity selector to be able to filter based off the biome and light levels at their position

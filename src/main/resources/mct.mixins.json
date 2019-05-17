@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "mask_of_loki.coretweaks.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "WanderingTraderEntityMixin",
+    "VillagerEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "mct",
+  "version": "${version}",
+
+  "name": "MaskOfLoki's Core Tweaks",
+  "description": "Alters villager trade functionality and allows configurable trades via config files.",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/mct/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "mask_of_loki.coretweaks.Mod"
+    ]
+  },
+  "mixins": [
+    "mct.mixins.json"
+  ],
+
+  "requires": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
