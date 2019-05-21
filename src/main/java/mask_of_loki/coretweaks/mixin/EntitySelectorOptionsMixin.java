@@ -26,7 +26,7 @@ import net.minecraft.util.NumberRange;
 public abstract class EntitySelectorOptionsMixin {
 	private static final SimpleCommandExceptionType MCT_INVALID_LIGHT_LEVEL = new SimpleCommandExceptionType(new TranslatableComponent("argument.entity.options.light.invalid", new Object[0]));
 	@Shadow
-	static abstract void putOption(String string_1, EntitySelectorOptions.SelectorHandler entitySelectorOptions$SelectorHandler_1, Predicate<EntitySelectorReader> predicate_1, Component component_1);
+	static void putOption(String string_1, EntitySelectorOptions.SelectorHandler entitySelectorOptions$SelectorHandler_1, Predicate<EntitySelectorReader> predicate_1, Component component_1) {}
 	
 	@Inject(method="register", at = @At(value="JUMP", ordinal = 0))
 	private static void onRegister1(CallbackInfo ci) {
