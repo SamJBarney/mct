@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
+import mask_of_loki.coretweaks.helper.EntitySelectorReaderHelper;
 import net.minecraft.command.EntitySelectorOptions;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.network.chat.Component;
@@ -33,24 +34,13 @@ public abstract class EntitySelectorOptionsMixin {
 			int cursor = reader.getReader().getCursor();
 			NumberRange.IntRange range = NumberRange.IntRange.parse(reader.getReader());
 			if ((range.getMin() == null || (Integer)range.getMin() > -1) && (range.getMax() == null || (Integer)range.getMax() > -1 && (Integer)range.getMax() < 16)) {
-				try {
-					reader.getClass().getMethod("mct_setLightLevel", NumberRange.IntRange.class).invoke(reader, range);
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-						| SecurityException | NoSuchMethodException e) {
-					e.printStackTrace();
-				}
+				EntitySelectorReaderHelper.setLightLevel(reader, range);
 			} else {
 				reader.getReader().setCursor(cursor);
                throw MCT_INVALID_LIGHT_LEVEL.createWithContext(reader.getReader());
 			}
 		}, reader -> {
-			try {
-				return ((NumberRange)reader.getClass().getMethod("mct_getLightLevel").invoke(reader)).isDummy();
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-					| SecurityException | NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-			return true;
+			return EntitySelectorReaderHelper.getLightLevel(reader).isDummy();
 		}, new TranslatableComponent("argument.entity.options.light.description", new Object[0]));
 	}
 }

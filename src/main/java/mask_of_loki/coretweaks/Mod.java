@@ -8,6 +8,7 @@ import com.google.gson.JsonSyntaxException;
 import mask_of_loki.coretweaks.command.MCTCommand;
 import mask_of_loki.coretweaks.config.MainConfig;
 import mask_of_loki.coretweaks.config.TradeConfig;
+import mask_of_loki.coretweaks.helper.Helpers;
 import net.fabricmc.api.ModInitializer;
 
 public class Mod implements ModInitializer {
@@ -20,6 +21,7 @@ public class Mod implements ModInitializer {
 	public void onInitialize() {
 		this.loadConfigs();
 		MCTCommand.register();
+		Helpers.init();
 	}
 	
 	private void loadConfigs() {

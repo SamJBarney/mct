@@ -5,8 +5,9 @@
   "mixins": [
   ],
   "client": [
-    "EntitySelectorReaderMixin",
+    "EntitySelectorMixin",
     "EntitySelectorOptionsMixin",
+    "EntitySelectorReaderMixin",
     "WanderingTraderEntityMixin",
     "VillagerEntityMixin"
   ],
