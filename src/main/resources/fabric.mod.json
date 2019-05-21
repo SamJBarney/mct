@@ -6,11 +6,11 @@
   "name": "MaskOfLoki's Core Tweaks",
   "description": "Alters villager trade functionality and allows configurable trades via config files.",
   "authors": [
-    "Me!"
+    "MaskOfLoki"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://minecraft.curseforge.com/projects/maskoflokis-fabric-tweaks",
+    "sources": "https://github.com/SamJBarney/mct"
   },
 
   "license": "CC0-1.0",

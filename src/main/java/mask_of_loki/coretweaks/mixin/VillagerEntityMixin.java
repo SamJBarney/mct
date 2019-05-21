@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin extends AbstractTraderEntity implements VillagerDataContainer {
 	
-	private int actual_level;
+	private int mct_level;
 
 	public VillagerEntityMixin(EntityType<? extends AbstractTraderEntity> entityType_1, World world_1) {
 		super(entityType_1, world_1);
@@ -31,14 +31,10 @@ public abstract class VillagerEntityMixin extends AbstractTraderEntity implement
 	protected void onFillRecipes(CallbackInfo ci) {
 		if (MainConfig.tweakTrades()) {
 			VillagerData data = this.getVillagerData();
-			Int2ObjectMap<TradeOffers.Factory[]> trades = CTTradeOffers.Instance().professionToQualityTrades
-					.get(data.getProfession());
-			if (trades != null && !trades.isEmpty()) {
-				TradeOffers.Factory[] factories = (TradeOffers.Factory[]) trades.get(data.getLevel());
-				if (factories != null) {
-					TraderOfferList offers = this.getOffers();
-					this.fillRecipesFromPool(offers, factories, 2);
-				}
+			TradeOffers.Factory[] trades = CTTradeOffers.villagerTrades(data.getProfession(), data.getLevel());
+			if (trades != null) {
+				TraderOfferList offers = this.getOffers();
+				this.fillRecipesFromPool(offers, trades, 2);
 			}
 			ci.cancel();
 		}

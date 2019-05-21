@@ -6,6 +6,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import mask_of_loki.coretweaks.CTTradeOffers;
 import mask_of_loki.coretweaks.config.MainConfig;
 import mask_of_loki.coretweaks.config.TradeConfig;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
@@ -73,6 +74,7 @@ public class MCTCommand {
 					try {
 						MainConfig.load();
 						TradeConfig.load();
+						CTTradeOffers.rebuild();
 					} catch (JsonIOException | JsonSyntaxException | IOException e) {
 						e.printStackTrace();
 						context.getSource().sendFeedback(new TextComponent("Configurations reloaded"), false);

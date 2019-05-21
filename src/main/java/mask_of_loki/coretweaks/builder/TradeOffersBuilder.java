@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -18,16 +15,13 @@ import mask_of_loki.coretweaks.config.MainConfig;
 import mask_of_loki.coretweaks.config.TradeConfig;
 import mask_of_loki.coretweaks.config.types.Trade;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradeOffers.Factory;
 import net.minecraft.village.TradeOffers;
+import net.minecraft.village.TradeOffers.Factory;
 import net.minecraft.village.VillagerProfession;
 
 public class TradeOffersBuilder {
 	Map<String, List<Trade>> trades = new HashMap<String, List<Trade>>();
-	Map<Integer, net.minecraft.village.TradeOffers.Factory[]> wanderer_trades;
 	
 	public void add(TradeConfig config) {
 		List<Trade> currentTrades = trades.get(config.profession);
@@ -37,9 +31,6 @@ public class TradeOffersBuilder {
 		}
 		List<Trade> newTrades = config.trades;
 		newTrades.forEach(trade -> {
-			System.out.print(config.profession);
-			System.out.print(':');
-			System.out.println(trade.level);
 			if (trade.level < 1) {
 				trade.level = config.level;
 			}
@@ -48,54 +39,51 @@ public class TradeOffersBuilder {
 	}
 	
 	public void create() {
-		@SuppressWarnings("unchecked")
-		Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> map = (Map)SystemUtil.consume(Maps.newHashMap(), (hashMap) -> {
-			trades.forEach((id, theTrades) -> {
-				System.out.println(String.format("Profession: %s", id));
-				if (!id.equals("minecraft:wandering_trader")) {
-					VillagerProfession profession = Registry.VILLAGER_PROFESSION.get(new Identifier(id));
-					if (profession != null) {
-						Map<Integer, TradeOffers.Factory[]> sorted = getSorted(theTrades);
-						if (MainConfig.appendBuiltinTrades()) {
-							TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(profession).forEach((key, trades) -> {
-								net.minecraft.village.TradeOffers.Factory[] offers = sorted.get(key);
-								if (offers == null) {
-									offers = trades;
-								} else {
-									offers = ArrayUtils.addAll(offers, trades);
-								}
-								sorted.put(key, offers);
-							});
-						}
-						hashMap.put(profession, copyToFastUtilMap(ImmutableMap.copyOf(sorted)));
-					} else {
-						System.out.println(String.format("Ignoring villager trade list for '%s' because profession does not exist", id));
-					}
+		
+		// Cleanup before calling
+		Identifier mct = new Identifier("mct:trades");
+		Identifier minecraft = new Identifier("minecraft:trades");
+		CTTradeOffers.removeVillagerTrades(mct);
+		CTTradeOffers.removeVillagerTrades(minecraft);
+		CTTradeOffers.removeWandererTrades(mct);
+		CTTradeOffers.removeWandererTrades(minecraft);
+		
+		// Load the config file trades
+		Map<VillagerProfession, Map<Integer, TradeOffers.Factory[]>> hashMap = new HashMap<VillagerProfession, Map<Integer, TradeOffers.Factory[]>>();
+		List<Map<Integer, TradeOffers.Factory[]>> wanderer_trades = new ArrayList<Map<Integer, TradeOffers.Factory[]>>();
+		trades.forEach((id, theTrades) -> {
+			if (!id.equals("minecraft:wandering_trader")) {
+				VillagerProfession profession = Registry.VILLAGER_PROFESSION.get(new Identifier(id));
+				if (profession != null) {
+					Map<Integer, TradeOffers.Factory[]> sorted = getSorted(theTrades);
+					hashMap.merge(profession, sorted, CTTradeOffers::mergeTrades);
 				} else {
-					wanderer_trades = getSorted(theTrades);
-					if (MainConfig.appendBuiltinTrades()) {
-						System.out.println("Appending trades");
-						TradeOffers.WANDERING_TRADER_TRADES.forEach((key, trades) -> {
-							net.minecraft.village.TradeOffers.Factory[] offers = wanderer_trades.get(key);
-							if (offers == null) {
-								offers = trades;
-							} else {
-								offers = ArrayUtils.addAll(offers, trades);
-							}
-							wanderer_trades.put(key, offers);
-						});
-					}
+					System.out.println(String.format("Ignoring villager trade list for '%s' because profession does not exist", id));
 				}
-			});
+			} else {
+				wanderer_trades.add(getSorted(theTrades));
+			}
 		});
 		
-		Int2ObjectMap<TradeOffers.Factory[]> wander_trades = null;
-		if (wanderer_trades != null) {
-			System.out.println("Adding wandering trader values");
-			wander_trades = copyToFastUtilMap(ImmutableMap.copyOf(wanderer_trades));
-			System.out.println(String.format("%d %d", wanderer_trades.size(), wander_trades.size()));
+		// Add the config file trades
+		CTTradeOffers.addVillagerTrades(mct, hashMap);
+		wanderer_trades.forEach(wTrades -> CTTradeOffers.addWandererTrades(mct, wTrades));
+		
+		// Add vanilla trades if requested
+		if (MainConfig.appendBuiltinTrades()) {
+			Map<VillagerProfession, Map<Integer, TradeOffers.Factory[]>> builtinTrades = new HashMap<VillagerProfession, Map<Integer, TradeOffers.Factory[]>>();
+			TradeOffers.PROFESSION_TO_LEVELED_TRADE.forEach((profession, original) -> {
+				Map<Integer, TradeOffers.Factory[]> trades = new HashMap<Integer, TradeOffers.Factory[]>();
+				original.forEach((key, value) -> trades.put(key, value));
+				builtinTrades.put(profession, trades);
+			});
+			CTTradeOffers.addVillagerTrades(minecraft, builtinTrades);
+			
+			Map<Integer, TradeOffers.Factory[]> wTrades = new HashMap<Integer, TradeOffers.Factory[]>();
+			TradeOffers.WANDERING_TRADER_TRADES.forEach((key, value) -> wTrades.put(key, value));
+			
+			CTTradeOffers.addWandererTrades(minecraft, wTrades);
 		}
-		CTTradeOffers.setup(map, wander_trades);
 	}
 	
 	public Map<Integer, TradeOffers.Factory[]> getSorted(List<Trade> theTrades) {

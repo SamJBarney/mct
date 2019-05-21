@@ -30,6 +30,7 @@ public class Mod implements ModInitializer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		CTTradeOffers.rebuild();
 	}
 
 }

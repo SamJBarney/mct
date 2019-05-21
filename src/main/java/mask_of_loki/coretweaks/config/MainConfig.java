@@ -22,6 +22,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
+import mask_of_loki.coretweaks.CTTradeOffers;
 import net.fabricmc.loader.FabricLoader;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -86,6 +87,7 @@ public class MainConfig {
 		INSTANCE.appendBuiltinTrades = value;
 		try {
 			TradeConfig.load();
+			CTTradeOffers.rebuild();
 			save();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -115,7 +117,6 @@ public class MainConfig {
 			int modifiers = field.getModifiers();
 			return !Modifier.isStatic(modifiers) && Modifier.isPublic(modifiers);
 		}).map(field -> {
-			System.out.println(field.getName());
 			return field.getName();
 		}).toArray(String[]::new);
 	}

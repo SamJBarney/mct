@@ -81,8 +81,6 @@ public class CTFactory implements TradeOffers.Factory {
 		if (trade.potion != null) {
 			if (!trade.potion.equals("mct:any")) {
 				Potion potion = Registry.POTION.get(new Identifier(trade.potion));
-				System.out.println(trade.potion);
-				System.out.println(Registry.POTION.getId(potion).toString());
 				stack = PotionUtil.setPotion(stack, potion);
 			} else {
 				Potion potion = Registry.POTION.getRandom(random);
