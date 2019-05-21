@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import mask_of_loki.coretweaks.config.types.Enchant;
 import mask_of_loki.coretweaks.config.types.Trade;
 import mask_of_loki.coretweaks.config.types.TradeItem;
 import net.minecraft.enchantment.Enchantment;
@@ -115,7 +116,7 @@ public class CTFactory implements TradeOffers.Factory {
 					enchant = Registry.ENCHANTMENT.getRandom(random);
 				}
 				if (enchant != null) {
-					int lvl = Math.min(enchant.getMaximumLevel(), Math.max(enchant.getMinimumLevel(), trade.enchants[i].lvl));
+					int lvl = getEnchantLvl(trade.enchants[i], enchant, random);
 					enchants.put(enchant, lvl);
 				}
 			}
@@ -126,20 +127,31 @@ public class CTFactory implements TradeOffers.Factory {
 	}
 	
 	private static int getAmount(TradeItem item, Random random) {
-		int result = item.amount;
-		if (item.amount == 0) {
-			if (item.min > 0 || item.max > 0) {
-				if (item.min < item.max) {
-					result =  random.nextInt(item.max - item.min) + item.min;
-				} else {
-					result = item.min;
+		return Math.min(getValue(item.amount, item.min, item.max, random), item.asItem().getMaxAmount());
+	}
+	
+	private static int getEnchantLvl(Enchant enchant, Enchantment enchantment, Random random) {
+		int min_lvl = enchantment.getMinimumLevel();
+		int max_lvl = enchantment.getMaximumLevel();
+		int lvl = (enchant.lvl > 0) ? Math.min(enchant.lvl, max_lvl) : 0;
+		int min = (enchant.min > 0)? Math.max(enchant.min, min_lvl) : 0;
+		int max = (enchant.max > 0) ? Math.min(enchant.max, max_lvl) : 0;
+		return getValue(lvl, min, max, random);
+	}
+	
+	private static int getValue(int value, int min, int max, Random random) {
+		if (value < 1) {
+			if (min > 0 || max > 0) {
+				if (min < max) {
+					return random.nextInt(max - min) + min;
 				}
-			} else {
-				result = 1;
+				return min;
 			}
+			
+			return 1;
 		}
-
-		return Math.min(result, item.asItem().getMaxAmount());
+		
+		return value;
 	}
 	
 }
