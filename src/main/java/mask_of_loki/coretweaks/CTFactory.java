@@ -34,8 +34,9 @@ public class CTFactory implements TradeOffers.Factory {
 		ItemStack stackA = null;
 		if (trade.buyA != null) {
 			itemA = trade.buyA.asItem();
-			if (itemA != null && trade.buyA.amount > 0) {
-				stackA = new ItemStack(itemA, trade.buyA.amount);
+			int amount = getAmount(trade.buyA, random);
+			if (itemA != null && amount > 0) {
+				stackA = new ItemStack(itemA, amount);
 				stackA = applyData(trade.buyA, stackA, random);
 			}
 		}
@@ -44,8 +45,9 @@ public class CTFactory implements TradeOffers.Factory {
 		ItemStack stackB = null;
 		if (trade.buyB != null) {
 			itemB = trade.buyB.asItem();
-			if (itemB != null && trade.buyB.amount > 0) {
-				stackB = new ItemStack(itemB, trade.buyB.amount);
+			int amount = getAmount(trade.buyB, random);
+			if (itemB != null && amount > 0) {
+				stackB = new ItemStack(itemB, amount);
 				stackB = applyData(trade.buyB, stackB, random);
 			}
 		}
@@ -54,8 +56,9 @@ public class CTFactory implements TradeOffers.Factory {
 		ItemStack stackResult = null;
 		if (trade.result != null) {
 			result = trade.result.asItem();
-			if (result != null && trade.result.amount > 0) {
-				stackResult = new ItemStack(result, trade.result.amount);
+			int amount = getAmount(trade.result, random);
+			if (result != null && amount > 0) {
+				stackResult = new ItemStack(result, amount);
 				stackResult = applyData(trade.result, stackResult, random);
 			}
 		}
@@ -120,6 +123,23 @@ public class CTFactory implements TradeOffers.Factory {
 		}
 		
 		return stack;
+	}
+	
+	private static int getAmount(TradeItem item, Random random) {
+		int result = item.amount;
+		if (item.amount == 0) {
+			if (item.min > 0 || item.max > 0) {
+				if (item.min < item.max) {
+					result =  random.nextInt(item.max - item.min) + item.min;
+				} else {
+					result = item.min;
+				}
+			} else {
+				result = 1;
+			}
+		}
+
+		return Math.min(result, item.asItem().getMaxAmount());
 	}
 	
 }
